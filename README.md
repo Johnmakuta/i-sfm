@@ -136,8 +136,6 @@ Pointcloud of Gate:
 
 ![Reprojection Image per Image](results/gate_clr_rec.jpeg)
 
-![Reprojection Image per Image](results/gate_vid_clr.gif)
-
 
 
 **TempleRing**
@@ -187,7 +185,19 @@ INFO:SFM:============================================================
 
 ## Citation
 
-Will upload the Arxiv link here
+If you use this code or find it helpful, please cite the following paper:
+
+```bibtex
+@article{zeeshan2025incrementalSfM,
+  title={3D Reconstruction via Incremental Structure From Motion},
+  author={Muhammad Zeeshan and Umer Zaki and Syed Ahmed Pasha and Zaar Khizar},
+  journal={arXiv preprint arXiv:2508.01019},
+  year={2025},
+  url={https://arxiv.org/abs/2508.01019}
+}
+```
+
+This paper was accepted at [IBCAST 2025](https://www.ibcast.org.pk/).
 
 ## References  
 1. OpenCV Documentation: https://docs.opencv.org/   
