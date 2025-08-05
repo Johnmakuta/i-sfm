@@ -88,7 +88,7 @@ This will perform the following:
 To run the SFM pipeline on different datasets: "Temple Ring, House and Park Gate" change the dataset_path in the main jupyter notebook cell under the Configuration & Setup cell 
 
 ```
-dataset_path = './datasets/templering'
+dataset_path = './templering'
 valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
 ext = rename_images_sequentially(dataset_path, valid_extensions=valid_extensions)
 
