@@ -204,5 +204,4 @@ This paper was accepted at [IBCAST 2025](https://www.ibcast.org.pk/).
 2. Hartley, Zisserman. *Multiple View Geometry in Computer Vision*.  
 3. Scipy Optimization: https://docs.scipy.org/doc/scipy/reference/optimize.html   
 4. Open3D: http://www.open3d.org/docs/  
-5. https://github.com/rshilliday/sfm/tree/master
-6. This implementation is based on multiple computer vision and structure from motion techniques. The datasets, Temple Ring is from the Middlebury Multi-View Stereo dataset. https://vision.middlebury.edu/mview/data/ and Park Gate dataset is taken from https://www.maths.lth.se/matematiklth/personal/calle/dataset/dataset.html
+5. This implementation is based on multiple computer vision and structure from motion techniques. The datasets, Temple Ring is from the Middlebury Multi-View Stereo dataset. https://vision.middlebury.edu/mview/data/ and Park Gate dataset is taken from https://www.maths.lth.se/matematiklth/personal/calle/dataset/dataset.html
