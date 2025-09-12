@@ -50,7 +50,37 @@ class Reconstruction:
         self.failed_attempts: Dict[int, int] = {}
         self.add_count = 0
 
-    def select_baseline(self, top_percent: float = 0.3) -> Tuple[int, int]:
+    def select_baseline(self, top_percent: float = 0.3,
+                    min_parallax_deg: float = 2.0) -> Tuple[int, int]:
+        """
+        Select a baseline image pair for initialization.
+    
+        Args:
+            top_percent: optional, unused here but could be used if you want
+                         to keep the top-k% pairs.
+            min_parallax_deg: minimum median parallax (in degrees)
+                              required to accept a pair.
+        Returns:
+            (i, j): indices of selected baseline pair
+        """
+    
+        def compute_parallax(pts_i, pts_j, K, R, t, mask):
+            pts_i = pts_i[mask.ravel() == 1]
+            pts_j = pts_j[mask.ravel() == 1]
+            if len(pts_i) == 0:
+                return 0.0
+            # undistort & normalize to bearing vectors
+            v1 = cv2.undistortPoints(pts_i.reshape(-1,1,2), K, None).reshape(-1,2)
+            v2 = cv2.undistortPoints(pts_j.reshape(-1,1,2), K, None).reshape(-1,2)
+            v1 = np.hstack([v1, np.ones((v1.shape[0],1))])
+            v2 = np.hstack([v2, np.ones((v2.shape[0],1))])
+            v2_rot = (R @ v2.T).T
+            cos_angle = np.sum(v1 * v2_rot, axis=1) / (
+                np.linalg.norm(v1, axis=1) * np.linalg.norm(v2_rot, axis=1)
+            )
+            cos_angle = np.clip(cos_angle, -1.0, 1.0)
+            return np.median(np.arccos(cos_angle))  # radians
+    
         scores = []
         for (i, j), mlist in self.matches.items():
             if len(mlist) < self.cfg.min_inliers_baseline:
@@ -64,11 +94,26 @@ class Reconstruction:
             if mask is None or mask.sum() < self.cfg.min_inliers_baseline:
                 continue
             _, R, t, out_mask = cv2.recoverPose(E, pts_i, pts_j, self.cfg.K)
-            scores.append(((i, j), len(mlist), int(out_mask.sum()), np.linalg.norm(t)))
-        scores.sort(key=lambda x: x[2], reverse=True)
+            parallax = compute_parallax(pts_i, pts_j, self.cfg.K, R, t, out_mask)
+            parallax_deg = np.degrees(parallax)
+    
+            # filter by parallax
+            if parallax_deg < min_parallax_deg:
+                logger.debug(f"Rejected pair {(i, j)}: parallax {parallax_deg:.2f}° < {min_parallax_deg}°")
+                continue
+    
+            scores.append(((i, j), len(mlist), int(out_mask.sum()), parallax_deg))
+    
+        if not scores:
+            raise RuntimeError("No valid baseline pair found (all had too little parallax).")
+    
+        # sort by inliers, then by parallax
+        scores.sort(key=lambda x: (x[2], x[3]), reverse=True)
         best = scores[0]
-        logger.info(f"Baseline pair: {best[0]} with {best[1]} matches, {best[2]} inliers")
+        logger.info(f"Baseline pair: {best[0]} with {best[1]} matches, "
+                    f"{best[2]} inliers, median parallax {best[3]:.2f}°")
         return best[0]
+
 
     def initialize(self, baseline: Tuple[int, int]) -> None:
         i, j = baseline
