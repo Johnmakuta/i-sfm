@@ -32,7 +32,7 @@ A conda environment export is also uploaded
 Install the required Python packages:
 
 ```bash
-pip install numpy opencv-python open3d matplotlib scipy imageio
+conda install numpy opencv conda-forge::open3d matplotlib scipy imageio tqdm
 ```
 
 ## Project Structure

@@ -65,8 +65,8 @@ class Reconstruction:
         """
     
         def compute_parallax(pts_i, pts_j, K, R, t, mask):
-            pts_i = pts_i[mask.ravel() == 1]
-            pts_j = pts_j[mask.ravel() == 1]
+            pts_i = pts_i[mask.ravel() == 255]
+            pts_j = pts_j[mask.ravel() == 255]
             if len(pts_i) == 0:
                 return 0.0
             # undistort & normalize to bearing vectors
